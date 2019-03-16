@@ -13,10 +13,12 @@ import routes from './routes'
 import Mock from './mock'
 Mock.bootstrap();
 import 'font-awesome/css/font-awesome.min.css'
+import VueResource from 'vue-resource'
 
 Vue.use(ElementUI)
 Vue.use(VueRouter)
 Vue.use(Vuex)
+Vue.use(VueResource)
 
 //NProgress.configure({ showSpinner: false });
 
