@@ -1,324 +1,365 @@
 <template>
-	<section>
-		<!--工具条-->
-		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-			<el-form :inline="true" :model="filters">
-				<el-form-item>
-					<el-input v-model="filters.name" placeholder="姓名"></el-input>
-				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">查询</el-button>
-				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" @click="handleAdd">新增</el-button>
-				</el-form-item>
-			</el-form>
-		</el-col>
+    <section>
+        <!--工具条-->
+        <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
+            <el-form :inline="true" :model="filters">
+                <el-form-item>
+                    <el-button type="primary" v-on:click="getUsers">查询</el-button>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="handleAdd">新增</el-button>
+                </el-form-item>
+            </el-form>
+        </el-col>
 
-		<!--列表-->
-		<el-table :data="users" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
-			<el-table-column prop="name" label="产品名称" width="120">
-			</el-table-column>
-			<el-table-column prop="sex" label="分类" width="100">
-			</el-table-column>
-			<el-table-column prop="age" label="推荐" width="100">
-			</el-table-column>
-			<el-table-column prop="birth" label="精选" width="120">
-			</el-table-column>
-			<el-table-column prop="addr" label="最新" min-width="180">
-			</el-table-column>
-			<el-table-column label="操作" width="150">
-				<template scope="scope">
-					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">隐藏</el-button>
-				</template>
-			</el-table-column>
-		</el-table>
+        <!--列表-->
+        <el-table :data="productList" highlight-current-row v-loading="listLoading" @selection-change="selsChange"
+                  style="width: 100%;">
+            <el-table-column prop="id" label="产品名称" width="120">
+            </el-table-column>
+            <el-table-column prop="sex" label="分类" width="100">
+            </el-table-column>
+            <el-table-column prop="age" label="推荐" width="100">
+            </el-table-column>
+            <el-table-column prop="birth" label="精选" width="120">
+            </el-table-column>
+            <el-table-column prop="addr" label="最新" min-width="180">
+            </el-table-column>
+            <el-table-column label="操作" width="150">
+                <template scope="scope">
+                    <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                    <el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">隐藏</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
 
-		<!--工具条-->
-		<el-col :span="24" class="toolbar">
-			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
-			</el-pagination>
-		</el-col>
+        <!--工具条-->
+        <el-col :span="24" class="toolbar">
+            <el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="pageSize"
+                           :total="total" style="float:right;">
+            </el-pagination>
+        </el-col>
 
-		<!--编辑界面-->
-		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
-			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="姓名" prop="name">
-					<el-input v-model="editForm.name" auto-complete="off"></el-input>
-				</el-form-item>
+        <!--编辑界面-->
+        <el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
+            <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
+                <el-form-item label="产品" prop="product">
+                    <el-select v-model="editForm.product" placeholder="请选择产品">
+                        <el-option v-for="item in product" :label="item" :value="item"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="所属分类" prop="classify">
+                    <el-select v-model="editForm.classify" placeholder="请选择分类">
+                        <el-option v-for="item in classify" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="客户端" prop="client">
+                    <el-checkbox-group v-model="editForm.client">
+                        <el-checkbox v-for="city in client" :label="city" :key="city">{{city}}</el-checkbox>
+                    </el-checkbox-group>
+                </el-form-item>
+                <el-form-item label="渠道" prop="channel">
+                    <el-checkbox-group v-model="editForm.channel">
+                        <el-checkbox v-for="city in channel" :label="city" :key="city">{{city}}</el-checkbox>
+                    </el-checkbox-group>
+                </el-form-item>
+                <el-form-item label="推荐" prop="recommend">
+                    <el-radio-group v-model="editForm.recommend">
+                        <el-radio label="0">否</el-radio>
+                        <el-radio label="1">是</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="精品" prop="carefullySelect">
+                    <el-radio-group v-model="editForm.carefullySelect">
+                        <el-radio :label="0">否</el-radio>
+                        <el-radio :label="1">是</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="最新" prop="latestProduct">
+                    <el-radio-group v-model="editForm.latestProduct">
+                        <el-radio :label="0">否</el-radio>
+                        <el-radio :label="1">是</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click.native="editFormVisible = false">取消</el-button>
+                <el-button type="primary" @click.native="editSubmit" :loading="editLoading">提交</el-button>
+            </div>
+        </el-dialog>
 
-				<el-form-item label="性别">
-					<el-radio-group v-model="editForm.sex">
-						<el-radio class="radio" :label="1">男</el-radio>
-						<el-radio class="radio" :label="0">女</el-radio>
-					</el-radio-group>
-				</el-form-item>
-				<el-form-item label="年龄">
-					<el-input-number v-model="editForm.age" :min="0" :max="200"></el-input-number>
-				</el-form-item>
-				<el-form-item label="生日">
-					<el-date-picker type="date" placeholder="选择日期" v-model="editForm.birth"></el-date-picker>
-				</el-form-item>
-				<el-form-item label="地址">
-					<el-input type="textarea" v-model="editForm.addr"></el-input>
-				</el-form-item>
-			</el-form>
-			<div slot="footer" class="dialog-footer">
-				<el-button @click.native="editFormVisible = false">取消</el-button>
-				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">提交</el-button>
-			</div>
-		</el-dialog>
-
-		<!--新增界面-->
-		<el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
-			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-				<el-form-item label="产品" prop="name">
-					<el-select v-model="addForm.region" placeholder="请选择活动区域">
-						<el-option label="区域一" value="shanghai"></el-option>
-						<el-option label="区域二" value="beijing"></el-option>
-					</el-select>
-				</el-form-item>
-				<el-form-item label="所属分类" prop="name">
-					<el-select v-model="addForm.region" placeholder="请选择活动区域">
-						<el-option label="区域一" value="shanghai"></el-option>
-						<el-option label="区域二" value="beijing"></el-option>
-					</el-select>
-				</el-form-item>
-				<el-form-item label="客户端">
-					<el-checkbox-group v-model="editForm.type">
-						<el-checkbox label="美食/餐厅线上活动" name="type"></el-checkbox>
-						<el-checkbox label="地推活动" name="type"></el-checkbox>
-						<el-checkbox label="线下主题活动" name="type"></el-checkbox>
-						<el-checkbox label="单纯品牌曝光" name="type"></el-checkbox>
-					</el-checkbox-group>
-				</el-form-item>
-				<el-form-item label="渠道">
-					<el-checkbox-group v-model="editForm.type">
-						<el-checkbox label="美食/餐厅线上活动" name="type"></el-checkbox>
-						<el-checkbox label="地推活动" name="type"></el-checkbox>
-						<el-checkbox label="线下主题活动" name="type"></el-checkbox>
-						<el-checkbox label="单纯品牌曝光" name="type"></el-checkbox>
-					</el-checkbox-group>
-				</el-form-item>
-				<el-form-item label="推荐">
-					<el-radio-group v-model="addForm.sex">
-						<el-radio class="radio" :label="1">是</el-radio>
-						<el-radio class="radio" :label="0">否</el-radio>
-					</el-radio-group>
-				</el-form-item>
-				<el-form-item label="精品">
-					<el-radio-group v-model="addForm.sex">
-						<el-radio class="radio" :label="1">是</el-radio>
-						<el-radio class="radio" :label="0">否</el-radio>
-					</el-radio-group>
-				</el-form-item>
-				<el-form-item label="最新">
-					<el-radio-group v-model="addForm.sex">
-						<el-radio class="radio" :label="1">是</el-radio>
-						<el-radio class="radio" :label="0">否</el-radio>
-					</el-radio-group>
-				</el-form-item>
-			</el-form>
-			<div slot="footer" class="dialog-footer">
-				<el-button @click.native="addFormVisible = false">取消</el-button>
-				<el-button type="primary" @click.native="addSubmit" :loading="addLoading">提交</el-button>
-			</div>
-		</el-dialog>
-	</section>
+        <!--新增界面-->
+        <el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
+            <el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
+                <el-form-item label="产品" prop="product">
+                    <el-select v-model="addForm.productInfoId" placeholder="请选择产品">
+                        <el-option v-for="item in product" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="所属分类" prop="classify">
+                    <el-select v-model="addForm.classifyId" placeholder="请选择分类">
+                        <el-option v-for="item in classify" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="客户端" prop="client" @change="clientChange">
+                    <el-checkbox-group v-model="addForm.clientName">
+                        <el-checkbox v-for="item in client" :label="item" :key="item">{{item}}</el-checkbox>
+                    </el-checkbox-group>
+                </el-form-item>
+                <el-form-item label="渠道" prop="channel" @change="channelChange">
+                    <el-checkbox-group v-model="addForm.channelName">
+                        <el-checkbox v-for="item in channel" :label="item" :key="item">{{item}}</el-checkbox>
+                    </el-checkbox-group>
+                </el-form-item>
+                <el-form-item label="推荐" prop="recommend">
+                    <el-radio-group v-model="addForm.isRecommend">
+                        <el-radio label="0">否</el-radio>
+                        <el-radio label="1">是</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="精品" prop="carefullySelect">
+                    <el-radio-group v-model="addForm.isCarefullySelect">
+                        <el-radio :label="0">否</el-radio>
+                        <el-radio :label="1">是</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="最新" prop="latestProduct">
+                    <el-radio-group v-model="addForm.isLatestProduct">
+                        <el-radio :label="0">否</el-radio>
+                        <el-radio :label="1">是</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click.native="addFormVisible = false">取消</el-button>
+                <el-button type="primary" @click.native="addSubmit" :loading="addLoading">提交</el-button>
+            </div>
+        </el-dialog>
+    </section>
 </template>
 
 <script>
-	import util from '../../common/js/util'
-	//import NProgress from 'nprogress'
-	import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser } from '../../api/api';
+    export default {
+        data() {
+            return {
+                total: 0,
+                page: 1,
+                pageSize: 20,
+                product: [],
+                classify: [],
+                client: [],
+                channel: [],
+                clientName: [],
+                channelName: [],
+                listLoading: false,
+                sels: [],//列表选中列
 
-	export default {
-		data() {
-			return {
-				filters: {
-					name: ''
-				},
-				users: [],
-				total: 0,
-				page: 1,
-				listLoading: false,
-				sels: [],//列表选中列
+                editFormVisible: false,//编辑界面是否显示
+                editLoading: false,
+                editFormRules: {
+                    product: [
+                        {required: true, message: '请选择产品', trigger: 'blur'}
+                    ],
+                    classify: [
+                        {required: true, message: '请选择分类', trigger: 'blur'}
+                    ],
+                    client: [
+                        {required: true, message: '请选择客户端', trigger: 'blur'}
+                    ],
+                    channel: [
+                        {required: true, message: '请选择渠道', trigger: 'blur'}
+                    ],
+                    recommend: [
+                        {required: true, message: '请选择是否推荐', trigger: 'blur'}
+                    ],
+                    carefullySelect: [
+                        {required: true, message: '请选择是否精品', trigger: 'blur'}
+                    ],
+                    latestProduct: [
+                        {required: true, message: '请选择是否最新', trigger: 'blur'}
+                    ]
+                },
+                //编辑界面数据
+                editForm: {
+                    id: 0,
+                    name: '',
+                    sex: -1,
+                    age: 0,
+                    birth: '',
+                    addr: ''
+                },
 
-				editFormVisible: false,//编辑界面是否显示
-				editLoading: false,
-				editFormRules: {
-					name: [
-						{ required: true, message: '请输入姓名', trigger: 'blur' }
-					]
-				},
-				//编辑界面数据
-				editForm: {
-					id: 0,
-					name: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: ''
-				},
+                addFormVisible: false,//新增界面是否显示
+                addLoading: false,
+                addForm: {},
+                addFormRules: {
+                    /*product: [
+                        {required: true, message: '请选择产品', trigger: 'blur'}
+                    ],
+                    classify: [
+                        {required: true, message: '请选择分类', trigger: 'blur'}
+                    ],
+                    client: [
+                        {required: true, message: '请选择客户端', trigger: 'blur'}
+                    ],
+                    channel: [
+                        {required: true, message: '请选择渠道', trigger: 'blur'}
+                    ],
+                    recommend: [
+                        {required: true, message: '请选择是否推荐', trigger: 'blur'}
+                    ],
+                    carefullySelect: [
+                        {required: true, message: '请选择是否精品', trigger: 'blur'}
+                    ],
+                    latestProduct: [
+                        {required: true, message: '请选择是否最新', trigger: 'blur'}
+                    ]*/
+                }
+            }
+        },
+        methods: {
+            handleCurrentChange(val) {
+                this.page = val;
+                this.getProductList();
+            },
 
-				addFormVisible: false,//新增界面是否显示
-				addLoading: false,
-				addFormRules: {
-					name: [
-						{ required: true, message: '请输入姓名', trigger: 'blur' }
-					]
-				},
-				//新增界面数据
-				addForm: {
-					name: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: ''
-				}
+            //获取用户列表
+            getProductList() {
+                let para = {
+                    pageNum: this.page,
+                    pageSize: this.pageSize
+                };
+                this.listLoading = true;
+                this.$http.post('http://localhost:8088/sysManager/getLoanProductList', para, {emulateJSON: true}).then(result => {
+                    this.listLoading = false;
+                    this.total = result.body.data.total;
+                    this.productList = result.body.data.records;
+                })
+            },
 
-			}
-		},
-		methods: {
-			//性别显示转换
-			formatSex: function (row, column) {
-				return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
-			},
-			handleCurrentChange(val) {
-				this.page = val;
-				this.getUsers();
-			},
-			//获取用户列表
-			getUsers() {
-				let para = {
-					page: this.page,
-					name: this.filters.name
-				};
-				this.listLoading = true;
-				//NProgress.start();
-				getUserListPage(para).then((res) => {
-					this.total = res.data.total;
-					this.users = res.data.users;
-					this.listLoading = false;
-					//NProgress.done();
-				});
-			},
-			//删除
-			handleDel: function (index, row) {
-				this.$confirm('确认删除该记录吗?', '提示', {
-					type: 'warning'
-				}).then(() => {
-					this.listLoading = true;
-					//NProgress.start();
-					let para = { id: row.id };
-					removeUser(para).then((res) => {
-						this.listLoading = false;
-						//NProgress.done();
-						this.$message({
-							message: '删除成功',
-							type: 'success'
-						});
-						this.getUsers();
-					});
-				}).catch(() => {
+            //获取产品信息列表
+            getProductInfoList() {
+                this.$http.post('http://localhost:8088/sysProduct/getSysProductList', null, {emulateJSON: true}).then(result => {
+                    this.product = result.body.data;
+                })
+            },
 
-				});
-			},
-			//显示编辑界面
-			handleEdit: function (index, row) {
-				this.editFormVisible = true;
-				this.editForm = Object.assign({}, row);
-			},
-			//显示新增界面
-			handleAdd: function () {
-				this.addFormVisible = true;
-				this.addForm = {
-					name: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: ''
-				};
-			},
-			//编辑
-			editSubmit: function () {
-				this.$refs.editForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.editLoading = true;
-							//NProgress.start();
-							let para = Object.assign({}, this.editForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							editUser(para).then((res) => {
-								this.editLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
-								this.$refs['editForm'].resetFields();
-								this.editFormVisible = false;
-								this.getUsers();
-							});
-						});
-					}
-				});
-			},
-			//新增
-			addSubmit: function () {
-				this.$refs.addForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.addLoading = true;
-							//NProgress.start();
-							let para = Object.assign({}, this.addForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							addUser(para).then((res) => {
-								this.addLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
-								this.$refs['addForm'].resetFields();
-								this.addFormVisible = false;
-								this.getUsers();
-							});
-						});
-					}
-				});
-			},
-			selsChange: function (sels) {
-				this.sels = sels;
-			},
-			//批量删除
-			batchRemove: function () {
-				var ids = this.sels.map(item => item.id).toString();
-				this.$confirm('确认删除选中记录吗？', '提示', {
-					type: 'warning'
-				}).then(() => {
-					this.listLoading = true;
-					//NProgress.start();
-					let para = { ids: ids };
-					batchRemoveUser(para).then((res) => {
-						this.listLoading = false;
-						//NProgress.done();
-						this.$message({
-							message: '删除成功',
-							type: 'success'
-						});
-						this.getUsers();
-					});
-				}).catch(() => {
+            //获取产品分类列表
+            getProductClassifyList() {
+                this.$http.post('http://localhost:8088/sysProduct/getSysProductClassifyList', null, {emulateJSON: true}).then(result => {
+                    this.classify = result.body.data;
+                })
+            },
 
-				});
-			}
-		},
-		mounted() {
-			this.getUsers();
-		}
-	}
+            //获取客户端列表
+            getSysClientList() {
+                this.$http.post('http://localhost:8088/sysProduct/getSysClientList', null, {emulateJSON: true}).then(result => {
+                    this.client = result.body.data;
+                })
+            },
+
+            //获取渠道列表
+            getSysChannelList() {
+                this.$http.post('http://localhost:8088/sysProduct/getSysChannelList', null, {emulateJSON: true}).then(result => {
+                    this.channel = result.body.data;
+                })
+            },
+
+
+            //删除
+            handleDel: function (index, row) {
+                this.$confirm('确认删除该记录吗?', '提示', {
+                    type: 'warning'
+                }).then(() => {
+                    this.listLoading = true;
+                    //NProgress.start();
+                    let para = {id: row.id};
+                    removeUser(para).then((res) => {
+                        this.listLoading = false;
+                        //NProgress.done();
+                        this.$message({
+                            message: '删除成功',
+                            type: 'success'
+                        });
+                    });
+                }).catch(() => {
+
+                });
+            },
+
+            //显示编辑界面
+            handleEdit: function (index, row) {
+                this.editFormVisible = true;
+                this.editForm = Object.assign({}, row);
+            },
+
+            //显示新增界面
+            handleAdd: function () {
+                this.addFormVisible = true;
+            },
+
+            //编辑
+            editSubmit: function () {
+                this.$refs.editForm.validate((valid) => {
+                    if (valid) {
+                        this.$confirm('确认提交吗？', '提示', {}).then(() => {
+                            this.editLoading = true;
+                            let para = Object.assign({}, this.editForm);
+                            para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
+                            editUser(para).then((res) => {
+                                this.editLoading = false;
+                                this.$message({
+                                    message: '提交成功',
+                                    type: 'success'
+                                });
+                                this.$refs['editForm'].resetFields();
+                                this.editFormVisible = false;
+                            });
+                        });
+                    }
+                });
+            },
+
+            //新增
+            addSubmit: function () {
+                this.$refs.addForm.validate((valid) => {
+                    if (valid) {
+                        this.$confirm('确认提交吗？', '提示', {}).then(() => {
+                            this.addLoading = true;
+                            let para = Object.assign({}, this.addForm);
+                            debugger
+                            this.$http.post('http://localhost:8088/sysProduct/addProduct', para, {emulateJSON: true}).then(result => {
+                                this.addLoading = false;
+                                this.$message({
+                                    message: '提交成功',
+                                    type: 'success'
+                                });
+                                this.addFormVisible = false;
+                                this.getProductList();
+                            })
+                        });
+                    }
+                });
+            },
+            selsChange: function (sels) {
+                this.sels = sels;
+            },
+            clientChange: function (sels) {
+                this.clientName = sels;
+            },
+            channelChange: function (sels) {
+                this.channelName = sels;
+            },
+
+        },
+        mounted() {
+            this.getProductList();
+            this.getProductInfoList();
+            this.getProductClassifyList();
+            this.getSysClientList();
+            this.getSysChannelList();
+        }
+    }
 
 </script>
 

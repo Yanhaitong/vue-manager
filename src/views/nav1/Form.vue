@@ -415,7 +415,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.listLoading = true;
-                    let para = {productId: row.id, type: row.isHide};
+                    let para = {productId: row.id, isHide: 1};
                     this.$http.post('http://localhost:8088/sysManager/hiddenOrShowProduct', para, {emulateJSON: true}).then(result => {
                         this.addLoading = false;
                         this.$message({
