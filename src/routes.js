@@ -44,8 +44,8 @@ let routes = [
         name: '统计相关',
         iconCls: 'fa fa-id-card-o',
         children: [
-            { path: '/page4', component: Page4, name: '页面4' },
-            { path: '/page5', component: Page5, name: '页面5' }
+            { path: '/page4', component: Page4, name: 'APPUV统计' },
+            { path: '/page5', component: Page5, name: 'H5UV统计' }
         ]
     },
     {
