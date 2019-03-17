@@ -34,9 +34,15 @@
 
         <!--新增界面-->
         <el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
-            <el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-                <el-form-item label="客户端名称" prop="url">
-                    <el-input v-model="addForm.clientName" style="width: 80%;"></el-input>
+            <el-form :model="addForm" label-width="100px" :rules="addFormRules" ref="addForm">
+                <el-form-item label="客户端名称" prop="name">
+                    <el-input v-model="addForm.clientName" style="width: 50%;"></el-input>
+                </el-form-item>
+                <el-form-item label="客户端类型" prop="type">
+                    <el-select v-model="addForm.type" placeholder="请选择客户端类型">
+                        <el-option label="APP" value="0"></el-option>
+                        <el-option label="H5" value="1"></el-option>
+                    </el-select>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -108,7 +114,7 @@
                                     type: 'success'
                                 });
                                 this.addFormVisible = false;
-                                this.getChannelList();
+                                this.getClientList();
                             })
                         });
                     }
