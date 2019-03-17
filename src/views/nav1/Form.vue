@@ -342,7 +342,7 @@
                     pageSize: this.pageSize
                 };
                 this.listLoading = true;
-                this.$http.post('http://localhost:8088/sysManager/getLoanProductInfoList', para, {emulateJSON: true}).then(result => {
+                this.$http.post('http://localhost:8086/loanProduct/getLoanProductInfoList', para, {emulateJSON: true}).then(result => {
                     this.total = result.body.data.total;
                     this.users = result.body.data.records;
                     this.listLoading = false;
@@ -374,7 +374,7 @@
                         this.$confirm('确认提交吗？', '提示', {}).then(() => {
                             this.addLoading = true;
                             let para = Object.assign({}, this.addForm);
-                            this.$http.post('http://localhost:8088/sysManager/addLoanProduct', para, {emulateJSON: true}).then(result => {
+                            this.$http.post('http://localhost:8086/sysManager/addLoanProduct', para, {emulateJSON: true}).then(result => {
                                 this.addLoading = false;
                                 this.$message({
                                     message: '提交成功',
@@ -395,7 +395,7 @@
                         this.$confirm('确认提交吗？', '提示', {}).then(() => {
                             this.editLoading = true;
                             let para = Object.assign({}, this.editForm);
-                            this.$http.post('http://localhost:8088/sysManager/updateLoanProduct', para, {emulateJSON: true}).then(result => {
+                            this.$http.post('http://localhost:8086/sysManager/updateLoanProduct', para, {emulateJSON: true}).then(result => {
                                 this.addLoading = false;
                                 this.$message({
                                     message: '提交成功',
@@ -416,7 +416,7 @@
                 }).then(() => {
                     this.listLoading = true;
                     let para = {productId: row.id, isHide: 1};
-                    this.$http.post('http://localhost:8088/sysManager/hiddenOrShowProduct', para, {emulateJSON: true}).then(result => {
+                    this.$http.post('http://localhost:8086/sysManager/hiddenOrShowProduct', para, {emulateJSON: true}).then(result => {
                         this.addLoading = false;
                         this.$message({
                             message: '隐藏成功',

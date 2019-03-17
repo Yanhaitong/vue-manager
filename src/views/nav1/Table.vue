@@ -15,15 +15,19 @@
         <!--列表-->
         <el-table :data="productList" highlight-current-row v-loading="listLoading" @selection-change="selsChange"
                   style="width: 100%;">
-            <el-table-column prop="id" label="产品名称" width="120">
+            <el-table-column prop="name" label="产品名称">
             </el-table-column>
-            <el-table-column prop="sex" label="分类" width="100">
+            <el-table-column prop="title" label="分类">
             </el-table-column>
-            <el-table-column prop="age" label="推荐" width="100">
+            <el-table-column prop="clientName" label="客户端">
             </el-table-column>
-            <el-table-column prop="birth" label="精选" width="120">
+            <el-table-column prop="channelName" label="渠道">
             </el-table-column>
-            <el-table-column prop="addr" label="最新" min-width="180">
+            <el-table-column prop="recommend" label="推荐">
+            </el-table-column>
+            <el-table-column prop="carefullySelect" label="精选">
+            </el-table-column>
+            <el-table-column prop="latestProduct" label="最新">
             </el-table-column>
             <el-table-column label="操作" width="150">
                 <template scope="scope">
@@ -102,13 +106,13 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="客户端" prop="client" @change="clientChange">
-                    <el-checkbox-group v-model="addForm.clientName">
-                        <el-checkbox v-for="item in client" :label="item" :key="item">{{item}}</el-checkbox>
+                    <el-checkbox-group v-model="addForm.clientNames">
+                        <el-checkbox v-for="item in client" :label="item.name" :key="item.name">{{item.name}}</el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item label="渠道" prop="channel" @change="channelChange">
-                    <el-checkbox-group v-model="addForm.channelName">
-                        <el-checkbox v-for="item in channel" :label="item" :key="item">{{item}}</el-checkbox>
+                    <el-checkbox-group v-model="addForm.channelNames">
+                        <el-checkbox v-for="item in channel" :label="item.name" :key="item.name">{{item.name}}</el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item label="推荐" prop="recommend">
@@ -149,8 +153,8 @@
                 classify: [],
                 client: [],
                 channel: [],
-                clientName: [],
-                channelName: [],
+                clientNames: [],
+                channelNames: [],
                 listLoading: false,
                 sels: [],//列表选中列
 
@@ -223,48 +227,29 @@
                 this.getProductList();
             },
 
-            //获取用户列表
+            //获取产品列表
             getProductList() {
                 let para = {
                     pageNum: this.page,
                     pageSize: this.pageSize
                 };
                 this.listLoading = true;
-                this.$http.post('http://localhost:8088/sysManager/getLoanProductList', para, {emulateJSON: true}).then(result => {
+                this.$http.post('http://localhost:8086/loanProduct/getLoanProductList', para, {emulateJSON: true}).then(result => {
                     this.listLoading = false;
                     this.total = result.body.data.total;
                     this.productList = result.body.data.records;
                 })
             },
 
-            //获取产品信息列表
-            getProductInfoList() {
-                this.$http.post('http://localhost:8088/sysProduct/getSysProductList', null, {emulateJSON: true}).then(result => {
-                    this.product = result.body.data;
+            //获取产品配置参数
+            loanProductConfigParameter() {
+                this.$http.post('http://localhost:8086/loanProduct/loanProductConfigParameter', null, {emulateJSON: true}).then(result => {
+                    this.product = result.body.data.loanProductList;
+                    this.classify = result.body.data.classifysList;
+                    this.client = result.body.data.clientList;
+                    this.channel = result.body.data.channelList;
                 })
             },
-
-            //获取产品分类列表
-            getProductClassifyList() {
-                this.$http.post('http://localhost:8088/sysProduct/getSysProductClassifyList', null, {emulateJSON: true}).then(result => {
-                    this.classify = result.body.data;
-                })
-            },
-
-            //获取客户端列表
-            getSysClientList() {
-                this.$http.post('http://localhost:8088/sysProduct/getSysClientList', null, {emulateJSON: true}).then(result => {
-                    this.client = result.body.data;
-                })
-            },
-
-            //获取渠道列表
-            getSysChannelList() {
-                this.$http.post('http://localhost:8088/sysProduct/getSysChannelList', null, {emulateJSON: true}).then(result => {
-                    this.channel = result.body.data;
-                })
-            },
-
 
             //删除
             handleDel: function (index, row) {
@@ -328,7 +313,7 @@
                             this.addLoading = true;
                             let para = Object.assign({}, this.addForm);
                             debugger
-                            this.$http.post('http://localhost:8088/sysProduct/addProduct', para, {emulateJSON: true}).then(result => {
+                            this.$http.post('http://localhost:8086/loanProduct/addLoanProduct', para, {emulateJSON: true}).then(result => {
                                 this.addLoading = false;
                                 this.$message({
                                     message: '提交成功',
@@ -354,10 +339,7 @@
         },
         mounted() {
             this.getProductList();
-            this.getProductInfoList();
-            this.getProductClassifyList();
-            this.getSysClientList();
-            this.getSysChannelList();
+            this.loanProductConfigParameter();
         }
     }
 
