@@ -2,9 +2,12 @@
     <section>
         <!--工具条-->
         <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-            <el-form :inline="true" :model="filters">
+            <el-form :inline="true">
                 <el-form-item>
-                    <el-button type="primary" v-on:click="getUsers">查询</el-button>
+                    <el-input v-model="title" placeholder="请输入标题"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" v-on:click="getProductList">查询</el-button>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="handleAdd">新增</el-button>
@@ -230,6 +233,7 @@
             //获取产品列表
             getProductList() {
                 let para = {
+                    title: this.title,
                     pageNum: this.page,
                     pageSize: this.pageSize
                 };

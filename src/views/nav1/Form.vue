@@ -2,12 +2,12 @@
     <section>
         <!--工具条-->
         <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-            <el-form :inline="true" :model="filters">
+            <el-form :inline="true">
                 <el-form-item>
-                    <el-input v-model="filters.name1" placeholder="姓名"></el-input>
+                    <el-input v-model="title" placeholder="请输入标题"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" v-on:click="getUsers">查询</el-button>
+                    <el-button type="primary" v-on:click="getProductList">查询</el-button>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="handleAdd">新增</el-button>
@@ -215,9 +215,6 @@
     export default {
         data() {
             return {
-                filters: {
-                    name: ''
-                },
                 total: 0,
                 page: 1,
                 pageSize: 20,
@@ -338,6 +335,7 @@
             //获取产品列表
             getProductList() {
                 let para = {
+                    title: this.title,
                     pageNum: this.page,
                     pageSize: this.pageSize
                 };
@@ -396,12 +394,12 @@
                             this.editLoading = true;
                             let para = Object.assign({}, this.editForm);
                             this.$http.post('http://localhost:8086/sysManager/updateLoanProduct', para, {emulateJSON: true}).then(result => {
-                                this.addLoading = false;
+                                this.editLoading = false;
                                 this.$message({
                                     message: '提交成功',
                                     type: 'success'
                                 });
-                                this.addFormVisible = false;
+                                this.editFormVisible = false;
                                 this.getProductList();
                             })
                         });
@@ -414,7 +412,7 @@
                 this.$confirm('确认隐藏该产品吗?', '提示', {
                     type: 'warning'
                 }).then(() => {
-                    this.listLoading = true;
+                    this.addLoading = true;
                     let para = {productId: row.id, isHide: 1};
                     this.$http.post('http://localhost:8086/sysManager/hiddenOrShowProduct', para, {emulateJSON: true}).then(result => {
                         this.addLoading = false;
