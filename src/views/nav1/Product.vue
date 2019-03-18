@@ -62,12 +62,12 @@
                 </el-form-item>
                 <el-form-item label="客户端" prop="client">
                     <el-checkbox-group v-model="editForm.client">
-                        <el-checkbox v-for="city in client" :label="city" :key="city">{{city}}</el-checkbox>
+                        <el-checkbox v-for="item in client" :label="item.clientName" :key="item.clientName"></el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item label="渠道" prop="channel">
                     <el-checkbox-group v-model="editForm.channel">
-                        <el-checkbox v-for="city in channel" :label="city" :key="city">{{city}}</el-checkbox>
+                        <el-checkbox v-for="item in channel" :label="item.channelName" :key="item.channelName"></el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item label="推荐" prop="recommend">
@@ -110,12 +110,12 @@
                 </el-form-item>
                 <el-form-item label="客户端" prop="client" @change="clientChange">
                     <el-checkbox-group v-model="addForm.clientNames">
-                        <el-checkbox v-for="item in client" :label="item.name" :key="item.name">{{item.name}}</el-checkbox>
+                        <el-checkbox v-for="item in client" :label="item.clientName" :key="item.clientName">{{item.clientName}}</el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item label="渠道" prop="channel" @change="channelChange">
                     <el-checkbox-group v-model="addForm.channelNames">
-                        <el-checkbox v-for="item in channel" :label="item.name" :key="item.name">{{item.name}}</el-checkbox>
+                        <el-checkbox v-for="item in channel" :label="item.channelName" :key="item.channelName">{{item.channelName}}</el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item label="推荐" prop="recommend">
