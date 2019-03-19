@@ -47,12 +47,60 @@
             </el-pagination>
         </el-col>
 
+        <!--新增界面-->
+        <el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
+            <el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
+                <el-form-item label="产品" prop="product">
+                    <el-select v-model="addForm.productInfoId" placeholder="请选择产品">
+                        <el-option v-for="item in product" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="所属分类" prop="classify">
+                    <el-select v-model="addForm.classifyId" placeholder="请选择分类">
+                        <el-option v-for="item in classify" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="客户端" prop="client" @change="clientChange">
+                    <el-checkbox-group v-model="addForm.clientNames">
+                        <el-checkbox v-for="item in client" :label="item.clientName" :key="item.id"></el-checkbox>
+                    </el-checkbox-group>
+                </el-form-item>
+                <el-form-item label="渠道" prop="channel" @change="channelChange">
+                    <el-checkbox-group v-model="addForm.channelNames">
+                        <el-checkbox v-for="item in channel" :label="item.channelName" :key="item.id"></el-checkbox>
+                    </el-checkbox-group>
+                </el-form-item>
+                <el-form-item label="推荐" prop="recommend">
+                    <el-radio-group v-model="addForm.recommend">
+                        <el-radio label="0">否</el-radio>
+                        <el-radio label="1">是</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="精品" prop="carefullySelect">
+                    <el-radio-group v-model="addForm.carefullySelect">
+                        <el-radio :label="0">否</el-radio>
+                        <el-radio :label="1">是</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="最新" prop="latestProduct">
+                    <el-radio-group v-model="addForm.latestProduct">
+                        <el-radio :label="0">否</el-radio>
+                        <el-radio :label="1">是</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click.native="addFormVisible = false">取消</el-button>
+                <el-button type="primary" @click.native="addSubmit" :loading="addLoading">提交</el-button>
+            </div>
+        </el-dialog>
+
         <!--编辑界面-->
         <el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
             <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
                 <el-form-item label="产品" prop="product">
-                    <el-select v-model="editForm.product" placeholder="请选择产品">
-                        <el-option v-for="item in product" :label="item" :value="item"></el-option>
+                    <el-select v-model="editForm.productInfoId" placeholder="请选择产品">
+                        <el-option v-for="item in product" :label="item.name" :value="item.name"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="所属分类" prop="classify">
@@ -62,12 +110,12 @@
                 </el-form-item>
                 <el-form-item label="客户端" prop="client">
                     <el-checkbox-group v-model="editForm.client">
-                        <el-checkbox v-for="item in client" :label="item.clientName" :key="item.clientName"></el-checkbox>
+                        <el-checkbox v-for="item in client" :label="item.clientName" :key="item.id"></el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item label="渠道" prop="channel">
-                    <el-checkbox-group v-model="editForm.channel">
-                        <el-checkbox v-for="item in channel" :label="item.channelName" :key="item.channelName"></el-checkbox>
+                    <el-checkbox-group v-model="editForm.channelNames">
+                        <el-checkbox v-for="item in channelNames" :label="item.channelName" :key="item.id"></el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item label="推荐" prop="recommend">
@@ -94,54 +142,6 @@
                 <el-button type="primary" @click.native="editSubmit" :loading="editLoading">提交</el-button>
             </div>
         </el-dialog>
-
-        <!--新增界面-->
-        <el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
-            <el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-                <el-form-item label="产品" prop="product">
-                    <el-select v-model="addForm.productInfoId" placeholder="请选择产品">
-                        <el-option v-for="item in product" :label="item.name" :value="item.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="所属分类" prop="classify">
-                    <el-select v-model="addForm.classifyId" placeholder="请选择分类">
-                        <el-option v-for="item in classify" :label="item.name" :value="item.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="客户端" prop="client" @change="clientChange">
-                    <el-checkbox-group v-model="addForm.clientNames">
-                        <el-checkbox v-for="item in client" :label="item.clientName" :key="item.clientName">{{item.clientName}}</el-checkbox>
-                    </el-checkbox-group>
-                </el-form-item>
-                <el-form-item label="渠道" prop="channel" @change="channelChange">
-                    <el-checkbox-group v-model="addForm.channelNames">
-                        <el-checkbox v-for="item in channel" :label="item.channelName" :key="item.channelName">{{item.channelName}}</el-checkbox>
-                    </el-checkbox-group>
-                </el-form-item>
-                <el-form-item label="推荐" prop="recommend">
-                    <el-radio-group v-model="addForm.isRecommend">
-                        <el-radio label="0">否</el-radio>
-                        <el-radio label="1">是</el-radio>
-                    </el-radio-group>
-                </el-form-item>
-                <el-form-item label="精品" prop="carefullySelect">
-                    <el-radio-group v-model="addForm.isCarefullySelect">
-                        <el-radio :label="0">否</el-radio>
-                        <el-radio :label="1">是</el-radio>
-                    </el-radio-group>
-                </el-form-item>
-                <el-form-item label="最新" prop="latestProduct">
-                    <el-radio-group v-model="addForm.isLatestProduct">
-                        <el-radio :label="0">否</el-radio>
-                        <el-radio :label="1">是</el-radio>
-                    </el-radio-group>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click.native="addFormVisible = false">取消</el-button>
-                <el-button type="primary" @click.native="addSubmit" :loading="addLoading">提交</el-button>
-            </div>
-        </el-dialog>
     </section>
 </template>
 
@@ -152,53 +152,20 @@
                 total: 0,
                 page: 1,
                 pageSize: 20,
-                product: [],
-                classify: [],
-                client: [],
-                channel: [],
-                clientNames: [],
-                channelNames: [],
                 listLoading: false,
                 sels: [],//列表选中列
 
-                editFormVisible: false,//编辑界面是否显示
-                editLoading: false,
-                editFormRules: {
-                    product: [
-                        {required: true, message: '请选择产品', trigger: 'blur'}
-                    ],
-                    classify: [
-                        {required: true, message: '请选择分类', trigger: 'blur'}
-                    ],
-                    client: [
-                        {required: true, message: '请选择客户端', trigger: 'blur'}
-                    ],
-                    channel: [
-                        {required: true, message: '请选择渠道', trigger: 'blur'}
-                    ],
-                    recommend: [
-                        {required: true, message: '请选择是否推荐', trigger: 'blur'}
-                    ],
-                    carefullySelect: [
-                        {required: true, message: '请选择是否精品', trigger: 'blur'}
-                    ],
-                    latestProduct: [
-                        {required: true, message: '请选择是否最新', trigger: 'blur'}
-                    ]
-                },
-                //编辑界面数据
-                editForm: {
-                    id: 0,
-                    name: '',
-                    sex: -1,
-                    age: 0,
-                    birth: '',
-                    addr: ''
-                },
-
                 addFormVisible: false,//新增界面是否显示
                 addLoading: false,
-                addForm: {},
+                addForm: {
+                    productInfoId: null,
+                    classifyId: null,
+                    clientNames: [],
+                    channelNames: [],
+                    recommend: null,
+                    carefullySelect: null,
+                    latestProduct: null
+                },
                 addFormRules: {
                     /*product: [
                         {required: true, message: '请选择产品', trigger: 'blur'}
@@ -221,7 +188,43 @@
                     latestProduct: [
                         {required: true, message: '请选择是否最新', trigger: 'blur'}
                     ]*/
-                }
+                },
+
+                editFormVisible: false,//编辑界面是否显示
+                editLoading: false,
+                editFormRules: {
+                    /*product: [
+                        {required: true, message: '请选择产品', trigger: 'blur'}
+                    ],
+                    classify: [
+                        {required: true, message: '请选择分类', trigger: 'blur'}
+                    ],
+                    client: [
+                        {required: true, message: '请选择客户端', trigger: 'blur'}
+                    ],
+                    channel: [
+                        {required: true, message: '请选择渠道', trigger: 'blur'}
+                    ],
+                    recommend: [
+                        {required: true, message: '请选择是否推荐', trigger: 'blur'}
+                    ],
+                    carefullySelect: [
+                        {required: true, message: '请选择是否精品', trigger: 'blur'}
+                    ],
+                    latestProduct: [
+                        {required: true, message: '请选择是否最新', trigger: 'blur'}
+                    ]*/
+                },
+                //编辑界面数据
+                editForm: {
+                    productInfoId: null,
+                    classifyId: null,
+                    clientNames: [],
+                    channelNames: [],
+                    recommend: null,
+                    carefullySelect: null,
+                    latestProduct: null
+                },
             }
         },
         methods: {
