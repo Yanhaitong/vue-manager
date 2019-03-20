@@ -1,15 +1,19 @@
 <template>
     <section>
         <!--工具条-->
-        <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
+        <el-col :span="24" class="toolbar" style="padding-bottom: 0px; width: 100%">
             <el-form :inline="true">
                 <el-form-item>
-                    <el-input v-model="title" placeholder="请输入标题"></el-input>
+                    <el-input v-model="title" placeholder="请输入产品名称" style="width: 22%"></el-input>
+                    <el-select v-model="addForm.productInfoId" placeholder="请选择客户端" style="width: 22%">
+                        <el-option v-for="item in product" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                    <el-select v-model="addForm.productInfoId" placeholder="请选择产品" style="width: 22%">
+                        <el-option v-for="item in product" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
                 </el-form-item>
-                <el-form-item>
+                <el-form-item  style="width: 20%">
                     <el-button type="primary" v-on:click="getProductList">查询</el-button>
-                </el-form-item>
-                <el-form-item>
                     <el-button type="primary" @click="handleAdd">新增</el-button>
                 </el-form-item>
             </el-form>
@@ -97,25 +101,25 @@
 
         <!--编辑界面-->
         <el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
-            <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
+            <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="addForm">
                 <el-form-item label="产品" prop="product">
                     <el-select v-model="editForm.productInfoId" placeholder="请选择产品">
-                        <el-option v-for="item in product" :label="item.name" :value="item.name"></el-option>
+                        <el-option v-for="item in product" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="所属分类" prop="classify">
-                    <el-select v-model="editForm.classify" placeholder="请选择分类">
+                    <el-select v-model="editForm.classifyId" placeholder="请选择分类">
                         <el-option v-for="item in classify" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="客户端" prop="client">
-                    <el-checkbox-group v-model="editForm.client">
+                <el-form-item label="客户端" prop="client" @change="clientChange">
+                    <el-checkbox-group v-model="editForm.clientNames">
                         <el-checkbox v-for="item in client" :label="item.clientName" :key="item.id"></el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
-                <el-form-item label="渠道" prop="channel">
+                <el-form-item label="渠道" prop="channel" @change="channelChange">
                     <el-checkbox-group v-model="editForm.channelNames">
-                        <el-checkbox v-for="item in channelNames" :label="item.channelName" :key="item.id"></el-checkbox>
+                        <el-checkbox v-for="item in channel" :label="item.channelName" :key="item.id"></el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item label="推荐" prop="recommend">
@@ -216,15 +220,7 @@
                     ]*/
                 },
                 //编辑界面数据
-                editForm: {
-                    productInfoId: null,
-                    classifyId: null,
-                    clientNames: [],
-                    channelNames: [],
-                    recommend: null,
-                    carefullySelect: null,
-                    latestProduct: null
-                },
+                editForm: {},
             }
         },
         methods: {
@@ -319,8 +315,8 @@
                         this.$confirm('确认提交吗？', '提示', {}).then(() => {
                             this.addLoading = true;
                             let para = Object.assign({}, this.addForm);
-                            debugger
-                            this.$http.post('http://localhost:8086/loanProduct/addLoanProduct', para, {emulateJSON: true}).then(result => {
+                            var json = JSON.stringify(para);
+                            this.$http.post('http://localhost:8086/loanProduct/addLoanProduct', json, {emulateJSON: true}).then(result => {
                                 this.addLoading = false;
                                 this.$message({
                                     message: '提交成功',
