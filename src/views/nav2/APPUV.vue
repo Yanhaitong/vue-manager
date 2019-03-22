@@ -17,12 +17,12 @@
                 </el-form-item>
                 <el-form-item label="客户端" prop="client">
                     <el-select v-model="filters.client" placeholder="请选择客户端">
-                        <el-option v-for="item in client" :label="item.name" :value="item.id"></el-option>
+                        <el-option v-for="item in client" :label="item.clientName" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="渠道" prop="channel">
                     <el-select v-model="filters.channel" placeholder="请选择渠道">
-                        <el-option v-for="item in channel" :label="item.name" :value="item.id"></el-option>
+                        <el-option v-for="item in channel" :label="item.channelName" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
@@ -115,6 +115,20 @@
                     this.total = result.body.data.total;
                     this.APPUVList = result.body.data.records;
                     this.listLoading = false;
+                })
+            },
+
+            //获取客户端列表（条件查询使用）
+            loanProductConfigParameter() {
+                this.$http.post('http://localhost:8086/clientManager/getAllClients', null, {emulateJSON: true}).then(result => {
+                    this.filters.client = result.body.data;
+                })
+            },
+
+            //获取渠道列表（条件查询使用）
+            loanProductConfigParameter() {
+                this.$http.post('http://localhost:8086/channelManager/getAllChannels', null, {emulateJSON: true}).then(result => {
+                    this.filters.channel = result.body.data;
                 })
             },
 
