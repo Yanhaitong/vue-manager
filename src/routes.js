@@ -6,6 +6,7 @@ import Product from './views/nav1/Product.vue'
 import ProductInfo from './views/nav1/ProductInfo.vue'
 import Client from './views/nav1/Client.vue'
 import Channel from './views/nav1/Channel.vue'
+import LoginRegister from './views/nav2/LoginRegister.vue'
 import APPUV from './views/nav2/APPUV.vue'
 import H5UV from './views/nav2/H5UV.vue'
 import Page6 from './views/nav3/Page6.vue'
@@ -44,6 +45,7 @@ let routes = [
         name: '统计相关',
         iconCls: 'fa fa-id-card-o',
         children: [
+            { path: '/LoginRegister', component: LoginRegister, name: '登录注册统计' },
             { path: '/APPUV', component: APPUV, name: 'APPUV统计' },
             { path: '/H5UV', component: H5UV, name: 'H5UV统计' }
         ]
