@@ -9,7 +9,7 @@ import Channel from './views/nav1/Channel.vue'
 import LoginRegister from './views/nav2/LoginRegister.vue'
 import APPUV from './views/nav2/APPUV.vue'
 import H5UV from './views/nav2/H5UV.vue'
-import Page6 from './views/nav3/Page6.vue'
+import ProductAdvertising from './views/nav3/ProductAdvertising.vue'
 
 let routes = [
     {
@@ -28,7 +28,7 @@ let routes = [
     {
         path: '/',
         component: Home,
-        name: '配置相关',
+        name: '产品配置',
         iconCls: 'el-icon-message',//图标样式class
         children: [
             { path: '/main', component: Main, name: '主页', hidden: true },
@@ -41,22 +41,21 @@ let routes = [
     {
         path: '/',
         component: Home,
+        name: '广告配置',
+        iconCls: 'fa fa-address-card',
+        children: [
+            { path: '/ProductAdvertising', component: ProductAdvertising, name: '产品广告配置' }
+        ]
+    },
+    {
+        path: '/',
+        component: Home,
         name: '统计相关',
         iconCls: 'fa fa-id-card-o',
         children: [
             { path: '/LoginRegister', component: LoginRegister, name: '登录注册统计' },
             { path: '/APPUV', component: APPUV, name: 'APPUV统计' },
             { path: '/H5UV', component: H5UV, name: 'H5UV统计' }
-        ]
-    },
-    {
-        path: '/',
-        component: Home,
-        name: '',
-        iconCls: 'fa fa-address-card',
-        leaf: true,//只有一个节点
-        children: [
-            { path: '/page6', component: Page6, name: '导航三' }
         ]
     },
     {
