@@ -10,7 +10,6 @@ import LoginRegister from './views/nav2/LoginRegister.vue'
 import APPUV from './views/nav2/APPUV.vue'
 import H5UV from './views/nav2/H5UV.vue'
 import Page6 from './views/nav3/Page6.vue'
-import echarts from './views/charts/echarts.vue'
 
 let routes = [
     {
@@ -58,15 +57,6 @@ let routes = [
         leaf: true,//只有一个节点
         children: [
             { path: '/page6', component: Page6, name: '导航三' }
-        ]
-    },
-    {
-        path: '/',
-        component: Home,
-        name: 'Charts',
-        iconCls: 'fa fa-bar-chart',
-        children: [
-            { path: '/echarts', component: echarts, name: 'echarts' }
         ]
     },
     {
