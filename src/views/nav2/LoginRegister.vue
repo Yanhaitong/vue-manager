@@ -16,27 +16,28 @@
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item label="客户端" prop="client">
-                    <el-select v-model="filters.client" placeholder="请选择客户端">
-                        <el-option v-for="item in client" :label="item.name" :value="item.id"></el-option>
+                    <el-select v-model="filters.client" clearable placeholder="请选择客户端">
+                        <el-option v-for="item in client" :label="item.clientName" :value="item.clientName"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="渠道" prop="channel">
-                    <el-select v-model="filters.channel" placeholder="请选择渠道">
-                        <el-option v-for="item in channel" :label="item.name" :value="item.id"></el-option>
+                    <el-select v-model="filters.channel" clearable placeholder="请选择渠道">
+                        <el-option v-for="item in channel" :label="item.channelName"
+                                   :value="item.channelName"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" v-on:click="getUsers">查询</el-button>
+                    <el-button type="primary" v-on:click="getLoginRegisterInfo">查询</el-button>
                 </el-form-item>
             </el-form>
         </el-col>
 
         <!--列表-->
-        <el-table :data="APPUVList" highlight-current-row v-loading="listLoading" @selection-change="selsChange"
+        <el-table :data="loginRegisterList" highlight-current-row v-loading="listLoading" @selection-change="selsChange"
                   style="width: 100%;">
             <el-table-column prop="dataTime" label="日期">
             </el-table-column>
-            <el-table-column prop="productName" label="产品名称">
+            <el-table-column prop="clientName" label="客户端名称">
             </el-table-column>
             <el-table-column prop="loginCount" label="登录数量">
             </el-table-column>
@@ -102,21 +103,53 @@
             //分页
             handleCurrentChange(val) {
                 this.page = val;
-                this.getProductList();
+                this.getLoginRegisterInfo();
             },
 
-            //获取客户端列表
-            getChannelList() {
+            //获取登录注册统计列表
+            getLoginRegisterInfo() {
                 let para = {
+                    clientName: this.filters.client,
+                    channelName: this.filters.channel,
+                    startTime: this.formatDateTime(this.filters.name[0]),
+                    endTime: this.formatDateTime(this.filters.name[1]),
                     pageNum: this.page,
                     pageSize: this.pageSize
                 };
                 this.listLoading = true;
-                this.$http.post('http://localhost:8086/statistics/getAPPUVInfo', para, {emulateJSON: true}).then(result => {
+                this.$http.post('http://localhost:8086/statistics/getLoginRegisterInfo', para, {emulateJSON: true}).then(result => {
+                    debugger
                     this.total = result.body.data.total;
-                    this.APPUVList = result.body.data.records;
+                    this.loginRegisterList = result.body.data.records;
                     this.listLoading = false;
                 })
+            },
+
+            //获取客户端列表（条件查询使用）
+            getAllClients() {
+                this.$http.post('http://localhost:8086/clientManager/getAllClients', null, {emulateJSON: true}).then(result => {
+                    this.client = result.body.data;
+                })
+            },
+
+            //获取渠道列表（条件查询使用）
+            getAllChannels() {
+                this.$http.post('http://localhost:8086/channelManager/getAllChannels', null, {emulateJSON: true}).then(result => {
+                    this.channel = result.body.data;
+                })
+            },
+
+            formatDateTime: function (date) {
+                if (date) {
+                    var y = date.getFullYear();
+                    var m = date.getMonth() + 1;
+                    m = m < 10 ? ('0' + m) : m;
+                    var d = date.getDate();
+                    d = d < 10 ? ('0' + d) : d;
+                    return y + '-' + m + '-' + d;
+                } else {
+                    return null;
+                }
             },
 
             selsChange: function (sels) {
@@ -124,7 +157,9 @@
             }
         },
         mounted() {
-            this.getChannelList();
+            this.getLoginRegisterInfo();
+            this.getAllClients();
+            this.getAllChannels();
         }
     }
 

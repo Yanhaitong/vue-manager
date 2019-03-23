@@ -26,13 +26,13 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" v-on:click="getAPPUVList">查询</el-button>
+                    <el-button type="primary" v-on:click="getAPPUVInfo">查询</el-button>
                 </el-form-item>
             </el-form>
         </el-col>
 
         <!--列表-->
-        <el-table :data="APPUVList" highlight-current-row v-loading="listLoading" @selection-change="selsChange"
+        <el-table :data="appUVList" highlight-current-row v-loading="listLoading" @selection-change="selsChange"
                   style="width: 100%;">
             <el-table-column prop="dataTime" label="日期">
             </el-table-column>
@@ -100,11 +100,11 @@
             //分页
             handleCurrentChange(val) {
                 this.page = val;
-                this.getProductList();
+                this.getAPPUVInfo();
             },
 
             //获取APPUV点击列表
-            getAPPUVList() {
+            getAPPUVInfo() {
                 let para = {
                     clientName: this.filters.client,
                     channelName: this.filters.channel,
@@ -116,7 +116,7 @@
                 this.listLoading = true;
                 this.$http.post('http://localhost:8086/statistics/getAPPUVInfo', para, {emulateJSON: true}).then(result => {
                     this.total = result.body.data.total;
-                    this.APPUVList = result.body.data.records;
+                    this.appUVList = result.body.data.records;
                     this.listLoading = false;
                 })
             },
@@ -154,7 +154,7 @@
 
         },
         mounted() {
-            this.getAPPUVList();
+            this.getAPPUVInfo();
             this.getAllClients();
             this.getAllChannels();
         }

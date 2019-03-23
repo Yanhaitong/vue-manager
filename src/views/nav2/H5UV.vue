@@ -3,45 +3,44 @@
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters">
-				<el-form-item>
-					<el-input v-model="filters.name1" placeholder="姓名"></el-input>
+				<el-form-item label="时间">
+					<el-date-picker
+							v-model="filters.name"
+							type="daterange"
+							align="right"
+							unlink-panels
+							range-separator="至"
+							start-placeholder="开始日期"
+							end-placeholder="结束日期"
+							:picker-options="pickerOptions">
+					</el-date-picker>
+				</el-form-item>
+				<el-form-item label="客户端" prop="client">
+					<el-select v-model="filters.client" clearable placeholder="请选择客户端">
+						<el-option v-for="item in client" :label="item.clientName" :value="item.clientName"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="渠道" prop="channel">
+					<el-select v-model="filters.channel" clearable placeholder="请选择渠道">
+						<el-option v-for="item in channel" :label="item.channelName" :value="item.channelName"></el-option>
+					</el-select>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">查询</el-button>
-				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" @click="handleAdd">新增</el-button>
+					<el-button type="primary" v-on:click="getH5UVInfo">查询</el-button>
 				</el-form-item>
 			</el-form>
 		</el-col>
 
 		<!--列表-->
-		<el-table :data="users" highlight-current-row v-loading="listLoading" @selection-change="selsChange"
+		<el-table :data="appUVList" highlight-current-row v-loading="listLoading" @selection-change="selsChange"
 				  style="width: 100%;">
-			<el-table-column prop="name" label="渠道">
+			<el-table-column prop="dataTime" label="日期">
 			</el-table-column>
-			<el-table-column prop="createTime" label="添加时间">
+			<el-table-column prop="productName" label="产品名称">
 			</el-table-column>
-			<el-table-column label="操作" width="250">
-				<template scope="scope">
-					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-					<el-button type="danger" size="small" @click="handleHidden(scope.$index, scope.row)">隐藏</el-button>
-				</template>
+			<el-table-column prop="clickUVCount" label="H5点击UV">
 			</el-table-column>
 		</el-table>
-
-		<!--新增界面-->
-		<el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
-			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-				<el-form-item label="客户端名称" prop="clientName">
-					<el-input v-model="addForm.clientName"></el-input>
-				</el-form-item>
-			</el-form>
-			<div slot="footer" class="dialog-footer">
-				<el-button @click.native="addFormVisible = false">取消</el-button>
-				<el-button type="primary" @click.native="addSubmit" :loading="addLoading">提交</el-button>
-			</div>
-		</el-dialog>
 
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
@@ -57,15 +56,41 @@
 	export default {
 		data() {
 			return {
+				pickerOptions: {
+					shortcuts: [{
+						text: '最近一周',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '最近一个月',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '最近三个月',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+							picker.$emit('pick', [start, end]);
+						}
+					}]
+				},
 				filters: {
-					name: ''
+					name: '',
+					client: '',
+					channel: ''
 				},
 				total: 0,
 				page: 1,
 				pageSize: 20,
-				addFormVisible: false,
-				addForm: {},
-				addLoading: false,
 				listLoading: false,
 				sels: [],//列表选中列
 
@@ -75,50 +100,63 @@
 			//分页
 			handleCurrentChange(val) {
 				this.page = val;
-				this.getProductList();
+				this.getH5UVInfo();
 			},
 
-			//获取客户端列表
-			getChannelList() {
+			//获取APPUV点击列表
+			getH5UVInfo() {
 				let para = {
+					clientName: this.filters.client,
+					channelName: this.filters.channel,
+					startTime: this.formatDateTime(this.filters.name[0]),
+					endTime: this.formatDateTime(this.filters.name[1]),
 					pageNum: this.page,
 					pageSize: this.pageSize
 				};
 				this.listLoading = true;
-				this.$http.post('http://localhost:8086/channelManager/getChannelList', para, {emulateJSON: true}).then(result => {
+				this.$http.post('http://localhost:8086/statistics/getH5UVInfo', para, {emulateJSON: true}).then(result => {
 					this.total = result.body.data.total;
-					this.users = result.body.data.records;
+					this.appUVList = result.body.data.records;
 					this.listLoading = false;
 				})
 			},
 
-			//新增
-			addSubmit: function () {
-				this.$refs.addForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.addLoading = true;
-							let para = Object.assign({}, this.addForm);
-							this.$http.post('http://localhost:8086/channelManager/addChannel', para, {emulateJSON: true}).then(result => {
-								this.addLoading = false;
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
-								this.addFormVisible = false;
-								this.getChannelList();
-							})
-						});
-					}
-				});
+			//获取客户端列表（条件查询使用）
+			getAllClients() {
+				this.$http.post('http://localhost:8086/clientManager/getAllClients', null, {emulateJSON: true}).then(result => {
+					this.client = result.body.data;
+				})
+			},
+
+			//获取渠道列表（条件查询使用）
+			getAllChannels() {
+				this.$http.post('http://localhost:8086/channelManager/getAllChannels', null, {emulateJSON: true}).then(result => {
+					this.channel = result.body.data;
+				})
 			},
 
 			selsChange: function (sels) {
 				this.sels = sels;
+			},
+
+			formatDateTime: function (date) {
+				if (date) {
+					var y = date.getFullYear();
+					var m = date.getMonth() + 1;
+					m = m < 10 ? ('0' + m) : m;
+					var d = date.getDate();
+					d = d < 10 ? ('0' + d) : d;
+					return y + '-' + m + '-' + d;
+				} else {
+					return null;
+				}
 			}
+
 		},
 		mounted() {
-			this.getChannelList();
+			this.getH5UVInfo();
+			this.getAllClients();
+			this.getAllChannels();
 		}
 	}
 
