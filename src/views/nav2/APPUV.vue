@@ -16,17 +16,17 @@
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item label="客户端" prop="client">
-                    <el-select v-model="filters.client" placeholder="请选择客户端">
-                        <el-option v-for="item in client" :label="item.clientName" :value="item.id"></el-option>
+                    <el-select v-model="filters.client" clearable placeholder="请选择客户端">
+                        <el-option v-for="item in client" :label="item.clientName" :value="item.clientName"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="渠道" prop="channel">
-                    <el-select v-model="filters.channel" placeholder="请选择渠道">
-                        <el-option v-for="item in channel" :label="item.channelName" :value="item.id"></el-option>
+                    <el-select v-model="filters.channel" clearable placeholder="请选择渠道">
+                        <el-option v-for="item in channel" :label="item.channelName" :value="item.channelName"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" v-on:click="getUsers">查询</el-button>
+                    <el-button type="primary" v-on:click="getAPPUVList">查询</el-button>
                 </el-form-item>
             </el-form>
         </el-col>
@@ -103,15 +103,18 @@
                 this.getProductList();
             },
 
-            //获取客户端列表
-            getChannelList() {
+            //获取APPUV点击列表
+            getAPPUVList() {
                 let para = {
+                    clientName: this.filters.client,
+                    channelName: this.filters.channel,
+                    startTime: this.formatDateTime(this.filters.name[0]),
+                    endTime: this.formatDateTime(this.filters.name[1]),
                     pageNum: this.page,
                     pageSize: this.pageSize
                 };
                 this.listLoading = true;
                 this.$http.post('http://localhost:8086/statistics/getAPPUVInfo', para, {emulateJSON: true}).then(result => {
-                    debugger
                     this.total = result.body.data.total;
                     this.APPUVList = result.body.data.records;
                     this.listLoading = false;
@@ -119,25 +122,41 @@
             },
 
             //获取客户端列表（条件查询使用）
-            loanProductConfigParameter() {
+            getAllClients() {
                 this.$http.post('http://localhost:8086/clientManager/getAllClients', null, {emulateJSON: true}).then(result => {
-                    this.filters.client = result.body.data;
+                    this.client = result.body.data;
                 })
             },
 
             //获取渠道列表（条件查询使用）
-            loanProductConfigParameter() {
+            getAllChannels() {
                 this.$http.post('http://localhost:8086/channelManager/getAllChannels', null, {emulateJSON: true}).then(result => {
-                    this.filters.channel = result.body.data;
+                    this.channel = result.body.data;
                 })
             },
 
             selsChange: function (sels) {
                 this.sels = sels;
+            },
+
+            formatDateTime: function (date) {
+                if (date) {
+                    var y = date.getFullYear();
+                    var m = date.getMonth() + 1;
+                    m = m < 10 ? ('0' + m) : m;
+                    var d = date.getDate();
+                    d = d < 10 ? ('0' + d) : d;
+                    return y + '-' + m + '-' + d;
+                } else {
+                    return null;
+                }
             }
+
         },
         mounted() {
-            this.getChannelList();
+            this.getAPPUVList();
+            this.getAllClients();
+            this.getAllChannels();
         }
     }
 

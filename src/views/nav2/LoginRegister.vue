@@ -38,7 +38,9 @@
             </el-table-column>
             <el-table-column prop="productName" label="产品名称">
             </el-table-column>
-            <el-table-column prop="clickUVCount" label="app点击UV">
+            <el-table-column prop="loginCount" label="登录数量">
+            </el-table-column>
+            <el-table-column prop="registerCount" label="注册数量">
             </el-table-column>
         </el-table>
 
@@ -111,7 +113,6 @@
                 };
                 this.listLoading = true;
                 this.$http.post('http://localhost:8086/statistics/getAPPUVInfo', para, {emulateJSON: true}).then(result => {
-                    debugger
                     this.total = result.body.data.total;
                     this.APPUVList = result.body.data.records;
                     this.listLoading = false;
