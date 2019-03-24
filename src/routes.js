@@ -6,10 +6,12 @@ import Product from './views/nav1/Product.vue'
 import ProductInfo from './views/nav1/ProductInfo.vue'
 import Client from './views/nav1/Client.vue'
 import Channel from './views/nav1/Channel.vue'
-import LoginRegister from './views/nav2/LoginRegister.vue'
-import APPUV from './views/nav2/APPUV.vue'
-import H5UV from './views/nav2/H5UV.vue'
-import ProductAdvertising from './views/nav3/ProductAdvertising.vue'
+import ProductAdvertising from './views/nav2/ProductAdvertising.vue'
+import PushMessage from './views/nav3/PushMessage.vue'
+import LoginRegister from './views/nav4/LoginRegister.vue'
+import APPUV from './views/nav4/APPUV.vue'
+import H5UV from './views/nav4/H5UV.vue'
+
 
 let routes = [
     {
@@ -45,6 +47,15 @@ let routes = [
         iconCls: 'fa fa-address-card',
         children: [
             { path: '/ProductAdvertising', component: ProductAdvertising, name: '产品广告配置' }
+        ]
+    },
+    {
+        path: '/',
+        component: Home,
+        name: '推送配置',
+        iconCls: 'fa fa-address-card',
+        children: [
+            { path: '/PushMessage', component: PushMessage, name: 'APP推送' }
         ]
     },
     {

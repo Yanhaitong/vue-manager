@@ -12,7 +12,7 @@
                         <el-option v-for="item in product" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item  style="width: 20%">
+                <el-form-item style="width: 20%">
                     <el-button type="primary" v-on:click="getProductList">查询</el-button>
                     <el-button type="primary" @click="handleAdd">新增</el-button>
                 </el-form-item>
