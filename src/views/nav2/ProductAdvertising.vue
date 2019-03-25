@@ -76,9 +76,9 @@
                 </el-form-item>
                 <el-form-item label="广告位置" prop="type">
                     <el-select v-model="editForm.type" placeholder="请选择广告位置">
-                        <el-option label="启动图" key="0" value="0">启动图</el-option>
-                        <el-option label="首页弹框" key="1" value="1">首页弹框</el-option>
-                        <el-option label="首页轮播图" key="2" value="2">首页轮播图</el-option>
+                        <el-option label="启动图" :value="0">启动图</el-option>
+                        <el-option label="首页弹框" :value="1">首页弹框</el-option>
+                        <el-option label="首页轮播图" :value="2">首页轮播图</el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="客户端" prop="client" @change="clientChange">
@@ -123,7 +123,7 @@
                 addLoading: false,
                 editFormVisible: false,
                 editForm: {
-                    type: ''
+                    type: null
                 },
                 editLoading: false,
 
@@ -238,7 +238,6 @@
             //显示编辑界面
             handleEdit: function (index, row) {
                 this.editFormVisible = true;
-                debugger
                 this.editForm = Object.assign({}, row);
             },
 
