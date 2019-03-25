@@ -118,7 +118,6 @@
                 };
                 this.listLoading = true;
                 this.$http.post('http://localhost:8086/statistics/getLoginRegisterInfo', para, {emulateJSON: true}).then(result => {
-                    debugger
                     this.total = result.body.data.total;
                     this.loginRegisterList = result.body.data.records;
                     this.listLoading = false;

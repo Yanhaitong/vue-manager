@@ -95,6 +95,7 @@
                 editFormVisible: false,
                 editForm: {},
                 editLoading: false,
+                clientName: ""
 
             }
         },

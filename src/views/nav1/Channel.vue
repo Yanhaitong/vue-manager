@@ -16,7 +16,7 @@
         </el-col>
 
         <!--列表-->
-        <el-table :data="users" highlight-current-row v-loading="listLoading" @selection-change="selsChange"
+        <el-table :data="channelList" highlight-current-row v-loading="listLoading" @selection-change="selsChange"
                   style="width: 100%;">
             <el-table-column prop="channelName" label="渠道">
             </el-table-column>
@@ -81,7 +81,7 @@
                 addLoading: false,
                 listLoading: false,
                 sels: [],//列表选中列
-
+                channelName: ''
             }
         },
         methods: {
@@ -101,7 +101,7 @@
                 this.listLoading = true;
                 this.$http.post('http://localhost:8086/channelManager/getChannelList', para, {emulateJSON: true}).then(result => {
                     this.total = result.body.data.total;
-                    this.users = result.body.data.records;
+                    this.channelList = result.body.data.records;
                     this.listLoading = false;
                 })
             },

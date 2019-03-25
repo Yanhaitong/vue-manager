@@ -133,7 +133,7 @@
             //分页
             handleCurrentChange(val) {
                 this.page = val;
-                this.getProductList();
+                this.getProductAdvertisingList();
             },
 
             //获取广告配置列表
@@ -145,7 +145,8 @@
                     pageSize: this.pageSize
                 };
                 this.listLoading = true;
-                this.$http.post('http://localhost:8086/advertising/getAdvertisingList', para, {emulateJSON: true}).then(result => {
+                let json = JSON.stringify(para);
+                this.$http.post('http://localhost:8086/advertising/getAdvertisingList', json, {emulateJSON: true}).then(result => {
                     this.total = result.body.data.total;
                     this.advertisingList = result.body.data.records;
                     this.listLoading = false;
@@ -159,8 +160,7 @@
                         this.$confirm('确认提交吗？', '提示', {}).then(() => {
                             this.addLoading = true;
                             let para = Object.assign({}, this.addForm);
-                            var json = JSON.stringify(para);
-                            this.$http.post('http://localhost:8086/advertising/addAdvertising', json, {emulateJSON: true}).then(result => {
+                            this.$http.post('http://localhost:8086/advertising/addAdvertising', para, {emulateJSON: true}).then(result => {
                                 this.addLoading = false;
                                 this.$message({
                                     message: '提交成功',
@@ -186,8 +186,7 @@
                                 type: this.editForm.type,
                                 clientName: this.editForm.clientName
                             };
-                            var json = JSON.stringify(para);
-                            this.$http.post('http://localhost:8086/advertising/upDateAdvertising', json, {emulateJSON: true}).then(result => {
+                            this.$http.post('http://localhost:8086/advertising/upDateAdvertising', para, {emulateJSON: true}).then(result => {
                                 this.editLoading = false;
                                 this.$message({
                                     message: '提交成功',

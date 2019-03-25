@@ -11,6 +11,7 @@ import Vuex from 'vuex'
 //import 'nprogress/nprogress.css'
 import routes from './routes'
 import Mock from './mock'
+
 Mock.bootstrap();
 import 'font-awesome/css/font-awesome.min.css'
 import VueResource from 'vue-resource'
@@ -23,20 +24,20 @@ Vue.use(VueResource)
 //NProgress.configure({ showSpinner: false });
 
 const router = new VueRouter({
-  routes
+    routes
 })
 
 router.beforeEach((to, from, next) => {
-  //NProgress.start();
-  if (to.path == '/login') {
-    sessionStorage.removeItem('user');
-  }
-  let user = JSON.parse(sessionStorage.getItem('user'));
-  if (!user && to.path != '/login') {
-    next({ path: '/login' })
-  } else {
-    next()
-  }
+    //NProgress.start();
+    if (to.path == '/login') {
+        sessionStorage.removeItem('user');
+    }
+    let user = JSON.parse(sessionStorage.getItem('user'));
+    if (!user && to.path != '/login') {
+        next({path: '/login'})
+    } else {
+        next()
+    }
 })
 
 //router.afterEach(transition => {
@@ -44,11 +45,11 @@ router.beforeEach((to, from, next) => {
 //});
 
 new Vue({
-  //el: '#app',
-  //template: '<App/>',
-  router,
-  store,
-  //components: { App }
-  render: h => h(App)
+    //el: '#app',
+    //template: '<App/>',
+    router,
+    store,
+    //components: { App }
+    render: h => h(App)
 }).$mount('#app')
 

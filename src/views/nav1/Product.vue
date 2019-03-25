@@ -236,8 +236,9 @@
                     pageNum: this.page,
                     pageSize: this.pageSize
                 };
+                let json = JSON.parse(para);
                 this.listLoading = true;
-                this.$http.post('http://localhost:8086/loanProduct/getLoanProductList', para, {emulateJSON: true}).then(result => {
+                this.$http.post('http://localhost:8086/loanProduct/getLoanProductList', json, {emulateJSON: true}).then(result => {
                     this.listLoading = false;
                     this.total = result.body.data.total;
                     this.productList = result.body.data.records;
