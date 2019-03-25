@@ -117,13 +117,17 @@
                 listLoading: false,
                 sels: [],//列表选中列
                 addForm: {
+                    productInfoId: '',
+                    type: '',
                     clientNames: []
                 },
                 addFormVisible: false,//新增界面是否显示
                 addLoading: false,
                 editFormVisible: false,
                 editForm: {
-                    type: null
+                    productInfoId: '',
+                    type: '',
+                    clientNames: []
                 },
                 editLoading: false,
 
@@ -160,12 +164,17 @@
                         this.$confirm('确认提交吗？', '提示', {}).then(() => {
                             this.addLoading = true;
                             let para = Object.assign({}, this.addForm);
-                            this.$http.post('http://localhost:8086/advertising/addAdvertising', para, {emulateJSON: true}).then(result => {
+                            let json = JSON.stringify(para);
+                            this.$http.post('http://localhost:8086/advertising/addAdvertising', json, {emulateJSON: true}).then(result => {
                                 this.addLoading = false;
                                 this.$message({
                                     message: '提交成功',
                                     type: 'success'
                                 });
+                                //清空数据
+                                this.addForm.clientNames = [];
+                                this.addForm.productInfoId = '';
+                                this.addForm.type = '';
                                 this.addFormVisible = false;
                                 this.getProductAdvertisingList();
                             })
@@ -186,7 +195,8 @@
                                 type: this.editForm.type,
                                 clientName: this.editForm.clientName
                             };
-                            this.$http.post('http://localhost:8086/advertising/upDateAdvertising', para, {emulateJSON: true}).then(result => {
+                            let json = JSON.stringify(para);
+                            this.$http.post('http://localhost:8086/advertising/upDateAdvertising', json, {emulateJSON: true}).then(result => {
                                 this.editLoading = false;
                                 this.$message({
                                     message: '提交成功',
