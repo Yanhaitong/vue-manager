@@ -6,9 +6,9 @@
                 <el-form-item label="产品名称">
                     <el-input v-model="filters.productName" placeholder="请输入产品名称" clearable></el-input>
                 </el-form-item>
-                <el-form-item label="客户端" prop="clientNames">
-                    <el-select v-model="filters.clientNames" placeholder="请选择客户端" clearable>
-                        <el-option v-for="item in clientNames" :label="item.clientName" :value="item.clientName"></el-option>
+                <el-form-item label="客户端">
+                    <el-select v-model="filters.clientName" placeholder="请选择客户端" clearable>
+                        <el-option v-for="item in clientNameList" :label="item.clientName" :value="item.clientName"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
@@ -21,8 +21,7 @@
         </el-col>
 
         <!--列表-->
-        <el-table :data="advertisingList" highlight-current-row v-loading="listLoading" @selection-change="selsChange"
-                  style="width: 100%;">
+        <el-table :data="advertisingList" highlight-current-row v-loading="listLoading" style="width: 100%;">
             <el-table-column prop="productName" label="产品">
             </el-table-column>
             <el-table-column prop="typeName" label="位置">
@@ -44,7 +43,7 @@
             <el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
                 <el-form-item label="产品名称" prop="productInfoId">
                     <el-select v-model="addForm.productInfoId" placeholder="请选择产品" @change="testChange">
-                        <el-option v-for="item in productInfoId" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                        <el-option v-for="item in productInfoList" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="广告位置" prop="type">
@@ -56,7 +55,7 @@
                 </el-form-item>
                 <el-form-item label="客户端" prop="clientNames">
                     <el-checkbox-group v-model="addForm.clientNames">
-                        <el-checkbox v-for="item in clientNames" :label="item.clientName" :key="item.id"></el-checkbox>
+                        <el-checkbox v-for="item in clientNameList" :label="item.clientName" :value="item.clientName"></el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
             </el-form>
@@ -68,10 +67,10 @@
 
         <!--编辑界面-->
         <el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
-            <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
+            <el-form :model="editForm" label-width="80px" ref="editForm">
                 <el-form-item label="产品名称">
                     <el-select v-model="editForm.productInfoId" placeholder="请选择产品">
-                        <el-option v-for="item in productInfoId" :label="item.name" :value="item.id"></el-option>
+                        <el-option v-for="item in productInfoList" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="广告位置">
@@ -83,7 +82,7 @@
                 </el-form-item>
                 <el-form-item label="客户端">
                     <el-select v-model="editForm.clientName" placeholder="请选择客户端">
-                        <el-option v-for="item in clientName" :label="item.clientName" :value="item.clientName"></el-option>
+                        <el-option v-for="item in clientNameList" :label="item.clientName" :value="item.clientName"></el-option>
                     </el-select>
                 </el-form-item>
             </el-form>
@@ -109,8 +108,9 @@
             return {
                 filters: {
                     productName: '',
-                    clientNames: ''
+                    clientName: ''
                 },
+                advertisingList: [],
                 total: 0,
                 page: 1,
                 pageSize: 20,
@@ -129,32 +129,21 @@
                         {required: true, message: '请选择产品', trigger: 'blur'}
                     ],
                     type: [
-                        {required: true, message: '请选择广告位', trigger: 'blur'}
+                        {required: true, message: '请选择类型', trigger: 'blur'}
                     ],
                     clientNames: [
                         {required: true, message: '请选择客户端', trigger: 'blur'}
                     ],
                 },
-
                 editFormVisible: false,
                 editLoading: false,
                 editForm: {
                     productInfoId: '',
                     type: '',
-                    clientNames: []
+                    clientName: ''
                 },
-                editFormRules: {
-                    productInfoId: [
-                        {required: true, message: '请选择产品', trigger: 'blur'}
-                    ],
-                    type: [
-                        {required: true, message: '请选择广告位', trigger: 'blur'}
-                    ],
-                    clientNames: [
-                        {required: true, message: '请选择客户端', trigger: 'blur'}
-                    ],
-                },
-
+                productInfoList: '',
+                clientNameList: ''
             }
         },
         methods: {
@@ -196,7 +185,7 @@
                                     type: 'success'
                                 });
                                 //清空数据
-                                this.addForm.clientNames = [];
+                                this.addForm.clientNames = '';
                                 this.addForm.productInfoId = '';
                                 this.addForm.type = '';
                                 this.addFormVisible = false;
@@ -258,14 +247,14 @@
             //获取产品信息列表（条件查询使用）
             getAllProducts() {
                 this.$http.post('http://localhost:8086/loanProduct/getAllProducts', null, {emulateJSON: true}).then(result => {
-                    this.productInfoId = result.body.data;
+                    this.productInfoList = result.body.data;
                 })
             },
 
             //获取客户端列表（条件查询使用）
             getAllClients() {
                 this.$http.post('http://localhost:8086/clientManager/getAllClients', null, {emulateJSON: true}).then(result => {
-                    this.clientNames = result.body.data;
+                    this.clientNameList = result.body.data;
                 })
             },
 
