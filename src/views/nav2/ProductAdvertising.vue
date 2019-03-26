@@ -6,9 +6,9 @@
                 <el-form-item label="产品名称">
                     <el-input v-model="filters.productName" placeholder="请输入产品名称" clearable></el-input>
                 </el-form-item>
-                <el-form-item label="客户端" prop="client">
-                    <el-select v-model="filters.clientName" placeholder="请选择客户端" clearable>
-                        <el-option v-for="item in client" :label="item.clientName" :value="item.clientName"></el-option>
+                <el-form-item label="客户端" prop="clientNames">
+                    <el-select v-model="filters.clientNames" placeholder="请选择客户端" clearable>
+                        <el-option v-for="item in clientNames" :label="item.clientName" :value="item.clientName"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
@@ -42,21 +42,21 @@
         <!--新增界面-->
         <el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
             <el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-                <el-form-item label="产品名称" prop="product">
-                    <el-select v-model="addForm.productInfoId" placeholder="请选择产品">
-                        <el-option v-for="item in product" :label="item.name" :value="item.id"></el-option>
+                <el-form-item label="产品名称" prop="productInfoId">
+                    <el-select v-model="addForm.productInfoId" placeholder="请选择产品" @change="testChange">
+                        <el-option v-for="item in productInfoId" :key="item.id" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="广告位置" prop="type" @change="typeChange">
+                <el-form-item label="广告位置" prop="type">
                     <el-select v-model="addForm.type" placeholder="请选择广告位置">
                         <el-option label="启动图" value="0">启动图</el-option>
                         <el-option label="首页弹框" value="1">首页弹框</el-option>
                         <el-option label="首页轮播图" value="2">首页轮播图</el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="客户端" prop="client" @change="clientChange">
+                <el-form-item label="客户端" prop="clientNames">
                     <el-checkbox-group v-model="addForm.clientNames">
-                        <el-checkbox v-for="item in client" :label="item.clientName" :key="item.id"></el-checkbox>
+                        <el-checkbox v-for="item in clientNames" :label="item.clientName" :key="item.id"></el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
             </el-form>
@@ -69,21 +69,21 @@
         <!--编辑界面-->
         <el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
             <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-                <el-form-item label="产品名称" prop="product">
+                <el-form-item label="产品名称">
                     <el-select v-model="editForm.productInfoId" placeholder="请选择产品">
-                        <el-option v-for="item in product" :label="item.name" :value="item.id"></el-option>
+                        <el-option v-for="item in productInfoId" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="广告位置" prop="type">
+                <el-form-item label="广告位置">
                     <el-select v-model="editForm.type" placeholder="请选择广告位置">
                         <el-option label="启动图" :value="0">启动图</el-option>
                         <el-option label="首页弹框" :value="1">首页弹框</el-option>
                         <el-option label="首页轮播图" :value="2">首页轮播图</el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="客户端" prop="client" @change="clientChange">
+                <el-form-item label="客户端">
                     <el-select v-model="editForm.clientName" placeholder="请选择客户端">
-                        <el-option v-for="item in client" :label="item.clientName" :value="item.clientName"></el-option>
+                        <el-option v-for="item in clientName" :label="item.clientName" :value="item.clientName"></el-option>
                     </el-select>
                 </el-form-item>
             </el-form>
@@ -109,27 +109,51 @@
             return {
                 filters: {
                     productName: '',
-                    clientName: ''
+                    clientNames: ''
                 },
                 total: 0,
                 page: 1,
                 pageSize: 20,
                 listLoading: false,
                 sels: [],//列表选中列
+
+                addFormVisible: false,//新增界面是否显示
+                addLoading: false,
                 addForm: {
                     productInfoId: '',
                     type: '',
-                    clientNames: []
+                    clientNames: ''
                 },
-                addFormVisible: false,//新增界面是否显示
-                addLoading: false,
+                addFormRules: {
+                    productInfoId: [
+                        {required: true, message: '请选择产品', trigger: 'blur'}
+                    ],
+                    type: [
+                        {required: true, message: '请选择广告位', trigger: 'blur'}
+                    ],
+                    clientNames: [
+                        {required: true, message: '请选择客户端', trigger: 'blur'}
+                    ],
+                },
+
                 editFormVisible: false,
+                editLoading: false,
                 editForm: {
                     productInfoId: '',
                     type: '',
                     clientNames: []
                 },
-                editLoading: false,
+                editFormRules: {
+                    productInfoId: [
+                        {required: true, message: '请选择产品', trigger: 'blur'}
+                    ],
+                    type: [
+                        {required: true, message: '请选择广告位', trigger: 'blur'}
+                    ],
+                    clientNames: [
+                        {required: true, message: '请选择客户端', trigger: 'blur'}
+                    ],
+                },
 
             }
         },
@@ -234,14 +258,14 @@
             //获取产品信息列表（条件查询使用）
             getAllProducts() {
                 this.$http.post('http://localhost:8086/loanProduct/getAllProducts', null, {emulateJSON: true}).then(result => {
-                    this.product = result.body.data;
+                    this.productInfoId = result.body.data;
                 })
             },
 
             //获取客户端列表（条件查询使用）
             getAllClients() {
                 this.$http.post('http://localhost:8086/clientManager/getAllClients', null, {emulateJSON: true}).then(result => {
-                    this.client = result.body.data;
+                    this.clientNames = result.body.data;
                 })
             },
 
@@ -255,6 +279,10 @@
             handleAdd: function () {
                 this.addFormVisible = true;
             },
+
+            testChange: function (s) {
+                this.addForm.productInfoId = s;
+            }
 
         },
         mounted() {
