@@ -60,11 +60,14 @@
                 </el-form-item>
                 <el-form-item label="icon">
                     <el-upload
-                            class="avatar-uploader"
-                            action="https://jsonplaceholder.typicode.com/posts/"
+                            class="upload-demo"
+                            drag
+                            :action="upload_qiniu_url"
                             :show-file-list="false"
                             :on-success="handleAvatarSuccess"
-                            :before-upload="beforeAvatarUpload">
+                            :on-error="handleError"
+                            :before-upload="beforeAvatarUpload"
+                            :data="qiniuData">
                         <img v-if="imageUrl" :src="imageUrl" class="avatar">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                     </el-upload>
@@ -180,10 +183,49 @@
                     clientName: ''
                 },
                 productInfoList: '',
-                clientNameList: ''
+                clientNameList: '',
+                qiniuData: {
+                    key: "",
+                    token: "BlO3EQW0iUXWqfG-ftiUCN-XM2JPyvvq-WaVoyWg:Gi4UmEt5Ay_YmJROQ1YE6RD_X4E=:eyJzY29wZSI6Imljb246aWNvbl8xNTUzNjk2NzA0MTQ0LnBuZyIsImRlYWRsaW5lIjoxNTUzNjk2NzM0fQ=="
+                },
+                // 七牛云上传储存区域的上传域名（华东、华北、华南、北美、东南亚）
+                upload_qiniu_url: "http://upload-z1.qiniup.com",
+                // 七牛云返回储存图片的子域名
+                upload_qiniu_addr: "http://abc.clouddn.com/",
+                imageUrl: "",
+                Global: {
+                    dataUrl: 'http://yoursite.com'
+                }
             }
         },
         methods: {
+
+            beforeAvatarUpload: function(file) {
+                this.qiniuData.key = file.name;
+                const isJPG = file.type === "image/jpeg";
+                const isPNG = file.type === "image/png";
+                const isLt2M = file.size / 1024 / 1024 < 2;
+                if (!isJPG && !isPNG) {
+                    this.$message.error("图片只能是 JPG/PNG 格式!");
+                    return false;
+                }
+                if (!isLt2M) {
+                    this.$message.error("图片大小不能超过 2MB!");
+                    return false;
+                }
+            },
+            handleAvatarSuccess: function(res, file) {
+                this.imageUrl = this.upload_qiniu_addr + res.key;
+                console.log(this.imageUrl);
+            },
+            handleError: function(res) {
+                this.$message({
+                    message: "上传失败",
+                    duration: 2000,
+                    type: "warning"
+                });
+            },
+
             //分页
             handleCurrentChange(val) {
                 this.page = val;
