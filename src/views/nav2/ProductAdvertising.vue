@@ -61,7 +61,6 @@
                 <el-form-item label="icon">
                     <el-upload
                             class="upload-demo"
-                            drag
                             :action="upload_qiniu_url"
                             :show-file-list="false"
                             :on-success="handleAvatarSuccess"
@@ -185,11 +184,11 @@
                 productInfoList: '',
                 clientNameList: '',
                 qiniuData: {
-                    key: "",
-                    token: "BlO3EQW0iUXWqfG-ftiUCN-XM2JPyvvq-WaVoyWg:Gi4UmEt5Ay_YmJROQ1YE6RD_X4E=:eyJzY29wZSI6Imljb246aWNvbl8xNTUzNjk2NzA0MTQ0LnBuZyIsImRlYWRsaW5lIjoxNTUzNjk2NzM0fQ=="
+                    key: "test_1553781030199.png",
+                    token: "BlO3EQW0iUXWqfG-ftiUCN-XM2JPyvvq-WaVoyWg:qE2s-0IYK-YU_MmV-fVG8VZggAM=:eyJzY29wZSI6ImFwcF9wYWNrYWdlOnRlc3RfMTU1Mzc4MTAzMDE5OS5wbmciLCJkZWFkbGluZSI6MTU1Mzc4MTMzMH0="
                 },
                 // 七牛云上传储存区域的上传域名（华东、华北、华南、北美、东南亚）
-                upload_qiniu_url: "http://upload-z1.qiniup.com",
+                upload_qiniu_url: "https://upload-z0.qiniup.com",
                 // 七牛云返回储存图片的子域名
                 upload_qiniu_addr: "http://abc.clouddn.com/",
                 imageUrl: "",
@@ -201,7 +200,6 @@
         methods: {
 
             beforeAvatarUpload: function(file) {
-                this.qiniuData.key = file.name;
                 const isJPG = file.type === "image/jpeg";
                 const isPNG = file.type === "image/png";
                 const isLt2M = file.size / 1024 / 1024 < 2;
