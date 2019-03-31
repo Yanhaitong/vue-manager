@@ -8,7 +8,8 @@
                 </el-form-item>
                 <el-form-item label="客户端">
                     <el-select v-model="filters.clientName" placeholder="请选择客户端" clearable>
-                        <el-option v-for="item in clientNameList" :label="item.clientName" :value="item.clientName"></el-option>
+                        <el-option v-for="item in clientNameList" :label="item.clientName"
+                                   :value="item.clientName"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
@@ -42,12 +43,12 @@
         <el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
             <el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
                 <el-form-item label="产品名称" prop="productInfoId">
-                    <el-select v-model="addForm.productInfoId" placeholder="请选择产品" @change="testChange">
+                    <el-select v-model="addForm.productInfoId" placeholder="请选择产品">
                         <el-option v-for="item in productInfoList" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="广告位置" prop="type">
-                    <el-select v-model="addForm.type" placeholder="请选择广告位置">
+                <el-form-item label="广告位置" prop="location">
+                    <el-select v-model="addForm.location" placeholder="请选择广告位置">
                         <el-option label="启动图" value="0">启动图</el-option>
                         <el-option label="首页弹框" value="1">首页弹框</el-option>
                         <el-option label="首页轮播图" value="2">首页轮播图</el-option>
@@ -55,10 +56,11 @@
                 </el-form-item>
                 <el-form-item label="客户端" prop="clientNames">
                     <el-checkbox-group v-model="addForm.clientNames">
-                        <el-checkbox v-for="item in clientNameList" :label="item.clientName" :value="item.clientName"></el-checkbox>
+                        <el-checkbox v-for="item in clientNameList" :label="item.clientName"
+                                     :value="item.clientName"></el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
-                <el-form-item label="icon">
+                <el-form-item label="封面">
                     <el-upload
                             class="upload-demo"
                             :action="upload_qiniu_url"
@@ -67,7 +69,7 @@
                             :on-error="handleError"
                             :before-upload="beforeAvatarUpload"
                             :data="qiniuData">
-                        <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                        <img v-if="addForm.imageUrl" :src="addForm.imageUrl" class="avatar">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                     </el-upload>
                 </el-form-item>
@@ -87,7 +89,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="广告位置">
-                    <el-select v-model="editForm.type" placeholder="请选择广告位置">
+                    <el-select v-model="editForm.location" placeholder="请选择广告位置">
                         <el-option label="启动图" :value="0">启动图</el-option>
                         <el-option label="首页弹框" :value="1">首页弹框</el-option>
                         <el-option label="首页轮播图" :value="2">首页轮播图</el-option>
@@ -95,7 +97,8 @@
                 </el-form-item>
                 <el-form-item label="客户端">
                     <el-select v-model="editForm.clientName" placeholder="请选择客户端">
-                        <el-option v-for="item in clientNameList" :label="item.clientName" :value="item.clientName"></el-option>
+                        <el-option v-for="item in clientNameList" :label="item.clientName"
+                                   :value="item.clientName"></el-option>
                     </el-select>
                 </el-form-item>
             </el-form>
@@ -123,9 +126,11 @@
         position: relative;
         overflow: hidden;
     }
+
     .avatar-uploader .el-upload:hover {
         border-color: #409EFF;
     }
+
     .avatar-uploader-icon {
         font-size: 28px;
         color: #8c939d;
@@ -134,6 +139,7 @@
         line-height: 88px;
         text-align: center;
     }
+
     .avatar {
         width: 88px;
         height: 88px;
@@ -160,11 +166,12 @@
                 addLoading: false,
                 addForm: {
                     productInfoId: '',
-                    type: '',
-                    clientNames: ''
+                    location: '',
+                    clientNames: [],
+                    imageUrl: ''
                 },
                 addFormRules: {
-                    productInfoId: [
+                    /*productInfoId: [
                         {required: true, message: '请选择产品', trigger: 'blur'}
                     ],
                     type: [
@@ -172,34 +179,33 @@
                     ],
                     clientNames: [
                         {required: true, message: '请选择客户端', trigger: 'blur'}
-                    ],
+                    ],*/
                 },
                 editFormVisible: false,
                 editLoading: false,
                 editForm: {
                     productInfoId: '',
-                    type: '',
+                    location: '',
                     clientName: ''
                 },
                 productInfoList: '',
                 clientNameList: '',
                 qiniuData: {
-                    key: "test_1553781030199.png",
-                    token: "BlO3EQW0iUXWqfG-ftiUCN-XM2JPyvvq-WaVoyWg:qE2s-0IYK-YU_MmV-fVG8VZggAM=:eyJzY29wZSI6ImFwcF9wYWNrYWdlOnRlc3RfMTU1Mzc4MTAzMDE5OS5wbmciLCJkZWFkbGluZSI6MTU1Mzc4MTMzMH0="
+                    key: "",
+                    token: ""
                 },
                 // 七牛云上传储存区域的上传域名（华东、华北、华南、北美、东南亚）
                 upload_qiniu_url: "https://upload-z0.qiniup.com",
                 // 七牛云返回储存图片的子域名
-                upload_qiniu_addr: "http://abc.clouddn.com/",
-                imageUrl: "",
-                Global: {
-                    dataUrl: 'http://yoursite.com'
-                }
+                upload_qiniu_addr: "http://poaj8rslu.bkt.clouddn.com/"
             }
         },
+        mounted() {
+            this.getUpLoadToken();
+        },
         methods: {
-
-            beforeAvatarUpload: function(file) {
+            //上传图片相关
+            beforeAvatarUpload: function (file) {
                 const isJPG = file.type === "image/jpeg";
                 const isPNG = file.type === "image/png";
                 const isLt2M = file.size / 1024 / 1024 < 2;
@@ -212,16 +218,27 @@
                     return false;
                 }
             },
-            handleAvatarSuccess: function(res, file) {
-                this.imageUrl = this.upload_qiniu_addr + res.key;
-                console.log(this.imageUrl);
+            handleAvatarSuccess: function (res, file) {
+                this.addForm.imageUrl = this.upload_qiniu_addr + res.key;
+                console.log(this.addForm.imageUrl);
             },
-            handleError: function(res) {
+            handleError: function (res) {
                 this.$message({
                     message: "上传失败",
                     duration: 2000,
                     type: "warning"
                 });
+            },
+
+            //获取上传token
+            getUpLoadToken() {
+                let para = {
+                    bucketName: "app_package"
+                };
+                this.$http.post('http://localhost:8086/loanProduct/getUpLoadToken', para, {emulateJSON: true}).then(result => {
+                    this.qiniuData.key = result.body.data.data.key;
+                    this.qiniuData.token = result.body.data.data.token;
+                })
             },
 
             //分页
@@ -344,11 +361,8 @@
             //显示新增界面
             handleAdd: function () {
                 this.addFormVisible = true;
+                this.getUpLoadToken();
             },
-
-            testChange: function (s) {
-                this.addForm.productInfoId = s;
-            }
 
         },
         mounted() {
