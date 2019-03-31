@@ -6,10 +6,10 @@
                 <el-form-item>
                     <el-input v-model="filters.title" placeholder="请输入产品名称" style="width: 22%"></el-input>
                     <el-select v-model="filters.client" placeholder="请选择客户端" style="width: 22%">
-                        <el-option v-for="item in client" :label="item.name" :value="item.id"></el-option>
+                        <el-option v-for="item in clientNameList" :label="item.clientnName" :value="item.clientnName"></el-option>
                     </el-select>
                     <el-select v-model="filters.product" placeholder="请选择产品" style="width: 22%">
-                        <el-option v-for="item in product" :label="item.name" :value="item.id"></el-option>
+                        <el-option v-for="item in productNameList" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item style="width: 20%">
@@ -63,12 +63,12 @@
                         <el-option v-for="item in classify" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="客户端" prop="client" @change="clientChange">
+                <el-form-item label="客户端" prop="client">
                     <el-checkbox-group v-model="addForm.clientNames">
                         <el-checkbox v-for="item in client" :label="item.clientName" :key="item.id"></el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
-                <el-form-item label="渠道" prop="channel" @change="channelChange">
+                <el-form-item label="渠道" prop="channel">
                     <el-checkbox-group v-model="addForm.channelNames">
                         <el-checkbox v-for="item in channel" :label="item.channelName" :key="item.id"></el-checkbox>
                     </el-checkbox-group>
@@ -111,12 +111,12 @@
                         <el-option v-for="item in classify" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="客户端" prop="client" @change="clientChange">
+                <el-form-item label="客户端" prop="client">
                     <el-checkbox-group v-model="editForm.clientNames">
                         <el-checkbox v-for="item in client" :label="item.clientName" :key="item.id"></el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
-                <el-form-item label="渠道" prop="channel" @change="channelChange">
+                <el-form-item label="渠道" prop="channel">
                     <el-checkbox-group v-model="editForm.channelNames">
                         <el-checkbox v-for="item in channel" :label="item.channelName" :key="item.id"></el-checkbox>
                     </el-checkbox-group>
@@ -157,6 +157,9 @@
                 pageSize: 20,
                 listLoading: false,
                 sels: [],//列表选中列
+                clientNameList: '',
+                productNameList: '',
+                productList: '',
                 filters: {
                     title: '',
                     client: '',
@@ -166,13 +169,13 @@
                 addFormVisible: false,//新增界面是否显示
                 addLoading: false,
                 addForm: {
-                    productInfoId: null,
-                    classifyId: null,
+                    productInfoId: '',
+                    classifyId: '',
                     clientNames: [],
                     channelNames: [],
-                    recommend: null,
-                    carefullySelect: null,
-                    latestProduct: null
+                    recommend: '',
+                    carefullySelect: '',
+                    latestProduct: ''
                 },
                 addFormRules: {},
 
@@ -185,7 +188,6 @@
         methods: {
             handleCurrentChange(val) {
                 this.page = val;
-                this.getProductList();
             },
 
             //获取产品列表
@@ -201,16 +203,6 @@
                     this.listLoading = false;
                     this.total = result.body.data.total;
                     this.productList = result.body.data.records;
-                })
-            },
-
-            //获取产品配置参数
-            loanProductConfigParameter() {
-                this.$http.post('http://localhost:8086/loanProductConfig/loanProductConfigParameter', null, {emulateJSON: true}).then(result => {
-                    this.product = result.body.data.loanProductList;
-                    this.classify = result.body.data.classifysList;
-                    this.client = result.body.data.clientList;
-                    this.channel = result.body.data.channelList;
                 })
             },
 
@@ -290,9 +282,25 @@
                 });
             },
         },
+
+        //获取产品列表（条件查询使用）
+        getAllProducts() {
+            this.$http.post('http://localhost:8086/loanProduct/getAllProducts', null, {emulateJSON: true}).then(result => {
+                this.productNameList = result.body.data;
+            })
+        },
+
+        //获取客户端列表（条件查询使用）
+        getAllClients() {
+            this.$http.post('http://localhost:8086/clientManager/getAllClients', null, {emulateJSON: true}).then(result => {
+                this.clientNameList = result.body.data;
+            })
+        },
+
         mounted() {
             this.getProductList();
-            this.loanProductConfigParameter();
+            this.getAllProducts();
+            this.getAllClients();
         }
     }
 
